@@ -31,7 +31,7 @@ target_compile_definitions(flash_nuke PRIVATE
 pico_set_binary_type(flash_nuke no_flash)
 
 if(PICO_RP2350)
-    set(ROLLBACK 4)
+    set(ROLLBACK 5)
     pico_set_uf2_family(flash_nuke "rp2350-arm-s")
 
     if (SECURE_BOOT_PKEY)
