@@ -46,8 +46,8 @@ static void fail(void) {
 
 int main(void) {
     status_led_start();
-    // Visible warning before the first destructive operation.
-    sleep_ms(NUKE_WARNING_MS);
+    // Confirmation belongs to the installed firmware before this RAM image runs.
+    // Once execution starts, keep red steady throughout erasure and completion.
     uint8_t txbuf[4] = {0x9f, 0, 0, 0};
     uint8_t rxbuf[4] = {0};
     nuke_flash_do_cmd(txbuf, rxbuf, sizeof(txbuf));

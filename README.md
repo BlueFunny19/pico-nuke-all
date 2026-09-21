@@ -17,12 +17,14 @@ Grab Pico Universal Flash Nuke from the releases page: https://github.com/Gadget
 Use **pico_nuke_all_waveshare_rp2350_one.uf2** for the Waveshare RP2350-One.
 The generic Pico / Pico 2 image does not select this board's GPIO 16 RGB LED.
 
-- **Breathing red:** a four-second warning before erasure, then continuing while flash is erased and checked.
-- **Steady red:** every erased byte and the final picotool marker have been checked. The RGB LED is latched red before the device returns to BOOTSEL, ready for firmware installation.
+- **Breathing red:** the installed Pico All firmware is waiting for the physical button to confirm a Nuke update. PicoForge selects this prompt from the Nuke image metadata; ordinary firmware updates retain their yellow prompt. This needs the matching Pico All firmware with Nuke confirmation support.
+- **Steady red:** confirmation has been accepted, then Nuke runs with red steady throughout erasure and verification. There is no extra four-second warning after loading. After every erased byte and the final picotool marker have been checked, the RGB stays red in BOOTSEL, ready for firmware installation.
 - **Fast red blinking:** flash identification, erasure or marker verification failed. The program stays in RAM; reconnect in BOOTSEL to recover.
 
 The RGB LED uses the same RGB byte order as Pico All on this board. Both cores
-run from SRAM, so the breathing animation continues during blocking erase calls.
+run from SRAM, so the indicator does not depend on the Flash being erased.
+Loading Nuke directly from BOOTSEL cannot display the earlier confirmation
+prompt; it starts executing immediately with steady red.
 Single-colour Pico LEDs use their native colour; no firmware can turn those red.
 The onboard RGB's latched colour lasts while powered, until another program
 updates it. Unplugging clears it.

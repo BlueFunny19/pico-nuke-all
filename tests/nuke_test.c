@@ -11,7 +11,6 @@ uint8_t fake_flash[16384];
 static uint8_t capacity;
 static bool fail_erase, fail_program;
 static unsigned erase_calls, program_calls, led_state;
-static uint32_t warning_ms;
 #define main nuke_entry
 #include "../nuke.c"
 #undef main
@@ -19,14 +18,14 @@ static uint32_t warning_ms;
 void status_led_start(void) { led_state = 1; }
 void status_led_complete(void) { assert(program_calls == 1); led_state = 2; }
 void status_led_error(void) { led_state = 3; }
-void sleep_ms(uint32_t ms) { assert(led_state == 1 && !erase_calls); warning_ms += ms; }
+void sleep_ms(uint32_t ms) { (void)ms; assert(!"Nuke must not add another confirmation delay"); }
 void tight_loop_contents(void) { assert(led_state == 3); longjmp(finished, 2); }
 void reset_usb_boot(uint32_t activity, uint32_t disable) {
     assert(!activity && !disable && led_state == 2);
     longjmp(finished, 1);
 }
 void nuke_flash_do_cmd(const uint8_t *tx, uint8_t *rx, size_t count) {
-    assert(led_state == 1 && warning_ms == NUKE_WARNING_MS);
+    assert(led_state == 1);
     assert(count == 4 && tx[0] == 0x9f && tx[1] == 0 && tx[2] == 0 && tx[3] == 0);
     rx[3] = capacity;
 }
@@ -45,7 +44,7 @@ static void run_case(uint8_t c, bool bad_erase, bool bad_program, bool success) 
     capacity = c;
     fail_erase = bad_erase;
     fail_program = bad_program;
-    erase_calls = program_calls = warning_ms = led_state = 0;
+    erase_calls = program_calls = led_state = 0;
     memset(fake_flash, 0x5a, sizeof(fake_flash));
     int result = setjmp(finished);
     if (!result) { nuke_entry(); assert(false); }
@@ -58,20 +57,10 @@ static void run_case(uint8_t c, bool bad_erase, bool bad_program, bool success) 
     }
 }
 int main(void) {
-    uint8_t previous = NUKE_LED_PEAK;
-    for (uint32_t t = 0; t <= 1000; t += 20) {
-        uint8_t level = nuke_led_level(NUKE_LED_ERASING, t);
-        assert(level <= previous); previous = level;
-    }
-    assert(previous == 0);
-    for (uint32_t t = 1000; t <= 2000; t += 20) {
-        uint8_t level = nuke_led_level(NUKE_LED_ERASING, t);
-        assert(level >= previous); previous = level;
-    }
-    assert(previous == NUKE_LED_PEAK);
-    assert(nuke_led_level(NUKE_LED_ERASING, 500) == NUKE_LED_PEAK / 2);
-    for (uint32_t t = 0; t < 10000; t += 17)
+    for (uint32_t t = 0; t < 10000; t += 17) {
+        assert(nuke_led_level(NUKE_LED_ERASING, t) == NUKE_LED_PEAK);
         assert(nuke_led_level(NUKE_LED_COMPLETE, t) == NUKE_LED_PEAK);
+    }
     assert(nuke_led_level(NUKE_LED_ERROR, 0) == NUKE_LED_PEAK);
     assert(nuke_led_level(NUKE_LED_ERROR, 125) == 0);
     run_case(14, false, false, true);
@@ -84,5 +73,5 @@ int main(void) {
 #if PICO_RP2040
     run_case(25, false, false, false);
 #endif
-    puts("PASS breathing/steady/error patterns, warning order, erase verification and invalid JEDEC handling");
+    puts("PASS steady execution/completion, error pattern, no extra delay, erase verification and invalid JEDEC handling");
 }

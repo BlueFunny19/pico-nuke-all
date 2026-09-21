@@ -70,7 +70,7 @@ static void led_latch(void) {}
 enum { LED_READY = 1, LED_COMPLETE, LED_ERROR };
 
 // Both cores, their constants and the LED driver run from SRAM. Core 1 keeps
-// breathing throughout a blocking flash erase without relying on flash or IRQs.
+// the execution/error indicator independent of flash operations and IRQs.
 static void led_core(void) {
     led_init();
     led_red(NUKE_LED_PEAK);
