@@ -12,6 +12,41 @@ That nightmare is over. My gift to you: Pico Universal Flash Nuke!
 
 Grab Pico Universal Flash Nuke from the releases page: https://github.com/Gadgetoid/pico-universal-flash-nuke/releases/latest
 
+## Pico All / Waveshare RP2350-One status lights
+
+Use **pico_nuke_all_waveshare_rp2350_one.uf2** for the Waveshare RP2350-One.
+The generic Pico / Pico 2 image does not select this board's GPIO 16 RGB LED.
+
+- **Breathing red:** a four-second warning before erasure, then continuing while flash is erased and checked.
+- **Steady red:** every erased byte and the final picotool marker have been checked. The RGB LED is latched red before the device returns to BOOTSEL, ready for firmware installation.
+- **Fast red blinking:** flash identification, erasure or marker verification failed. The program stays in RAM; reconnect in BOOTSEL to recover.
+
+The RGB LED uses the same RGB byte order as Pico All on this board. Both cores
+run from SRAM, so the breathing animation continues during blocking erase calls.
+Single-colour Pico LEDs use their native colour; no firmware can turn those red.
+The onboard RGB's latched colour lasts while powered, until another program
+updates it. Unplugging clears it.
+
+This still erases the whole external flash and leaves only the existing
+first-page NUKE marker. It does **not** clear RP2350 OTP, Secure Boot or Secure
+Lock. A locked board needs an image signed locally with its original trusted
+key. Do not load Nuke just to preview its light pattern.
+
+Build with Pico SDK 2.2.0 or later:
+
+    cmake -S . -B build/waveshare -DPICO_BOARD=waveshare_rp2350_one
+    cmake --build build/waveshare
+
+For a locked board, add -DSECURE_BOOT_PKEY=/path/to/original-private.pem to the
+configure command. Keep the key local. The output is build/waveshare/flash_nuke.uf2.
+This is a RAM-only program; the existing rollback version is retained.
+
+Host tests exercise the real erase sequence against simulated flash, including
+failed erase/program operations, without touching a board:
+
+    cc -std=c11 -Wall -Wextra -Werror -DPICO_NO_FLASH=1 -I tests/stubs tests/nuke_test.c -o /tmp/nuke-test
+    /tmp/nuke-test
+
 ## Support Me
 
 I work on Pico shinies by day, occasionally cranking out balmy tools to make my job easier and sharing them with the world.

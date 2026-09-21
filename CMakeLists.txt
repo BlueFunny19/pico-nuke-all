@@ -13,12 +13,16 @@ pico_sdk_init()
 
 add_executable(flash_nuke
         nuke.c
+        status_led.c
         flash.c
         )
 
 target_link_libraries(flash_nuke
         pico_stdlib
         hardware_flash
+        hardware_pio
+        hardware_pwm
+        pico_multicore
         )
 
 # Dummy PICO_FLASH_SIZE_BYTES so that flash_range_erase doesn't just assert
