@@ -39,7 +39,10 @@ Build with Pico SDK 2.2.0 or later:
 
 For a locked board, add -DSECURE_BOOT_PKEY=/path/to/original-private.pem to the
 configure command. Keep the key local. The output is build/waveshare/flash_nuke.uf2.
-This is a RAM-only program; the existing rollback version is retained.
+This is a RAM-only program. Signed builds do not add a rollback version by default,
+so running Nuke does not opt a board into anti-rollback. Only set
+-DNUKE_ROLLBACK_VERSION=N if anti-rollback is already part of your device's
+firmware policy and N is compatible with the firmware you will restore.
 
 Host tests exercise the real erase sequence against simulated flash, including
 failed erase/program operations, without touching a board:
