@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 # Pull in SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(universal_flash_nuke C CXX ASM)
+project(pico_nuke_all VERSION 1.7 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -30,6 +30,10 @@ target_compile_definitions(flash_nuke PRIVATE
         PICO_FLASH_SIZE_BYTES=33554432
         )
 
+# Keep the program ID used by firmware tools to identify an erase image.
+pico_set_program_name(flash_nuke "flash_nuke")
+pico_set_program_version(flash_nuke "${PROJECT_VERSION}")
+
 # It doesn't make sense to run this program from flash. Always build a
 # RAM-only binary.
 pico_set_binary_type(flash_nuke no_flash)
@@ -38,17 +42,19 @@ if(PICO_RP2350)
     set(NUKE_ROLLBACK_VERSION "" CACHE STRING "Optional rollback version; leave empty unless required by the existing firmware policy")
     pico_set_uf2_family(flash_nuke "rp2350-arm-s")
 
+    pico_set_binary_version(flash_nuke MAJOR 1 MINOR 7)
+
     if (SECURE_BOOT_PKEY)
         message(STATUS "Secure Boot Key ${SECURE_BOOT_PKEY}")
         pico_sign_binary(flash_nuke ${SECURE_BOOT_PKEY})
         pico_hash_binary(flash_nuke)
         if (NUKE_ROLLBACK_VERSION STREQUAL "")
-            pico_set_binary_version(flash_nuke MAJOR 1 MINOR 5)
+            pico_set_binary_version(flash_nuke MAJOR 1 MINOR 7)
         else()
             if (NOT NUKE_ROLLBACK_VERSION MATCHES "^[0-9]+$")
                 message(FATAL_ERROR "NUKE_ROLLBACK_VERSION must be an integer")
             endif()
-            pico_set_binary_version(flash_nuke MAJOR 1 MINOR 5 ROLLBACK ${NUKE_ROLLBACK_VERSION})
+            pico_set_binary_version(flash_nuke MAJOR 1 MINOR 7 ROLLBACK ${NUKE_ROLLBACK_VERSION})
         endif()
     endif()
 endif()

@@ -1,70 +1,50 @@
-# Pico Universal Flash Nuke
+# Pico Nuke All
 
-Tired of hunting for the right flash_nuke.uf2 for your RP2040 or RP2350 based board? Your Pico, your Pico W, your Pico 2 W, no, I'm not keyword stuffing... you are!
+English | [中文](README.zh.md)
 
-That nightmare is over. My gift to you: Pico Universal Flash Nuke!
+Erase the external Flash on a **Waveshare RP2350-One**, then return to BOOTSEL for firmware installation.
 
-* The only .uf2 you'll ever need for all your nuking purposes!
-* Detects the size of a Pico or RP2XXX board's attached flash and nukes it accordingly.
-* *should* work with both RP2040 and RP2350 using a single, handy .uf2.
+## Features
 
-(This incredibly delicately combined uf2 was created using the awesome power of `cat`)
+- Detects the Flash capacity and verifies erasure
+- Runs from RAM, with a red status light throughout the operation
+- Preserves OTP, Secure Boot and Secure Lock settings
+- Works with PicoForge All's firmware signing and update flow
 
-Grab Pico Universal Flash Nuke from the releases page: https://github.com/Gadgetoid/pico-universal-flash-nuke/releases/latest
+## Download and use
 
-## Pico All / Waveshare RP2350-One status lights
+Download `pico_nuke_all-1.7-unsigned.uf2` from [Releases](https://github.com/BlueFunny19/pico-nuke-all/releases/latest).
 
-Use **pico_nuke_all_waveshare_rp2350_one.uf2** for the Waveshare RP2350-One.
-The generic Pico / Pico 2 image does not select this board's GPIO 16 RGB LED.
+> [!WARNING]
+> Published firmware is unsigned; sign it yourself before installation using **[PicoForge All](https://github.com/BlueFunny19/picoforge-all) → Firmware** and your local key. A device with Secure Boot enabled requires its original trusted key.
+>
+> Running Nuke permanently deletes all firmware, credentials, PINs and settings in external Flash. Prepare a signed Pico All image for restoration first. OTP and hardware locks remain in place.
 
-- **Breathing red:** the installed Pico All firmware is waiting for the physical button to confirm a Nuke update. PicoForge selects this prompt from the Nuke image metadata; ordinary firmware updates retain their yellow prompt. This needs the matching Pico All firmware with Nuke confirmation support.
-- **Steady red:** confirmation has been accepted, then Nuke runs with red steady throughout erasure and verification. There is no extra four-second warning after loading. After every erased byte and the final picotool marker have been checked, the RGB stays red in BOOTSEL, ready for firmware installation.
-- **Fast red blinking:** flash identification, erasure or marker verification failed. The program stays in RAM; reconnect in BOOTSEL to recover.
+1. Select the Nuke UF2 and your signing key in PicoForge All → Firmware, then sign it
+2. Choose Flash and confirm the erase prompt; press and release the device button (BOOTSEL) when the light flashes
+3. After completion, install your signed [Pico All](https://github.com/XiaoNetwork-Astral/pico-all/releases/latest) image
 
-The RGB LED uses the same RGB byte order as Pico All on this board. Both cores
-run from SRAM, so the indicator does not depend on the Flash being erased.
-Loading Nuke directly from BOOTSEL cannot display the earlier confirmation
-prompt; it starts executing immediately with steady red.
-Single-colour Pico LEDs use their native colour; no firmware can turn those red.
-The onboard RGB's latched colour lasts while powered, until another program
-updates it. Unplugging clears it.
+When loaded directly from BOOTSEL, Nuke starts immediately without another button prompt. After verification, Flash contains only the small `NUKE` marker used by picotool.
 
-This still erases the whole external flash and leaves only the existing
-first-page NUKE marker. It does **not** clear RP2350 OTP, Secure Boot or Secure
-Lock. A locked board needs an image signed locally with its original trusted
-key. Do not load Nuke just to preview its light pattern.
+| Light | Meaning |
+| --- | --- |
+| Breathing red | Installed Pico All is waiting for erase confirmation |
+| Steady red | Erasing / verifying, then ready in BOOTSEL after completion |
+| Fast red blinking | Erase or verification failed |
 
-Build with Pico SDK 2.2.0 or later:
+## Build
 
-    cmake -S . -B build/waveshare -DPICO_BOARD=waveshare_rp2350_one
-    cmake --build build/waveshare
+Requires an Arm toolchain, CMake, Ninja and Pico SDK 2.3.1.
 
-For a locked board, add -DSECURE_BOOT_PKEY=/path/to/original-private.pem to the
-configure command. Keep the key local. The output is build/waveshare/flash_nuke.uf2.
-This is a RAM-only program. Signed builds do not add a rollback version by default,
-so running Nuke does not opt a board into anti-rollback. Only set
--DNUKE_ROLLBACK_VERSION=N if anti-rollback is already part of your device's
-firmware policy and N is compatible with the firmware you will restore.
+```sh
+git clone https://github.com/BlueFunny19/pico-nuke-all.git
+cd pico-nuke-all
+cmake -S . -B build -G Ninja -DPICO_SDK_PATH=/path/to/pico-sdk -DPICO_BOARD=waveshare_rp2350_one
+cmake --build build
+```
 
-Host tests exercise the real erase sequence against simulated flash, including
-failed erase/program operations, without touching a board:
+Output: unsigned `build/flash_nuke.uf2`. Source builds also support `pico` and `pico2`; those boards use their own LED hardware. Host tests in `tests/` simulate erasure without touching a device.
 
-    cc -std=c11 -Wall -Wextra -Werror -DPICO_NO_FLASH=1 -I tests/stubs tests/nuke_test.c -o /tmp/nuke-test
-    /tmp/nuke-test
+## License and credits
 
-## Support Me
-
-I work on Pico shinies by day, occasionally cranking out balmy tools to make my job easier and sharing them with the world.
-
-If they help you too, great! If you want to throw me a bone for my troubles, see below:
-
-* Ko-Fi - https://ko-fi.com/gadgetoid
-* GitHub - https://github.com/sponsors/Gadgetoid
-* Patreon - https://www.patreon.com/c/gadgetoid
-* PayPal - https://www.paypal.com/paypalme/gadgetoid
-
-Find some of my other projects below:
-
-* dir2uf2 - Pack a directory and append it to a MicroPython uf2 - https://github.com/gadgetoid/dir2uf2
-* py_decl - Python code to read Pico's binary declaration format - https://github.com/gadgetoid/py_decl
-* Pico pinouts - https://pico.pinout.xyz 
+[BSD-3-Clause](LICENSE). Based on Phil Howard's [Pico Universal Flash Nuke](https://github.com/Gadgetoid/pico-universal-flash-nuke) and Raspberry Pi's Flash Nuke example.
