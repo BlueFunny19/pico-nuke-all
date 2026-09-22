@@ -16,7 +16,7 @@
 从 [Releases](https://github.com/BlueFunny19/pico-nuke-all/releases/latest) 下载 `pico_nuke_all-1.7-unsigned.uf2`
 
 > [!WARNING]
-> 发布的固件未签名，需要自行签名后再安装；可使用 **[PicoForge All](https://github.com/BlueFunny19/picoforge-all) → 固件**，选择本地签名密钥进行签名；已开启安全启动的设备必须使用原来的受信任密钥
+> 发布的固件未签名，需要自行签名后再安装；可使用 **[PicoForge All](https://github.com/XiaoNetwork-Astral/pico-forge-all) → 固件**，选择本地签名密钥进行签名；已开启安全启动的设备必须使用原来的受信任密钥
 >
 > 运行 Nuke 会永久删除外部 Flash 中的全部固件、凭据、PIN 和设置；请先准备好已签名的 Pico All 恢复固件；OTP 和硬件锁定不会被清除
 

@@ -16,7 +16,7 @@ Erase the external Flash on a **Waveshare RP2350-One**, then return to BOOTSEL f
 Download `pico_nuke_all-1.7-unsigned.uf2` from [Releases](https://github.com/BlueFunny19/pico-nuke-all/releases/latest).
 
 > [!WARNING]
-> Published firmware is unsigned; sign it yourself before installation using **[PicoForge All](https://github.com/BlueFunny19/picoforge-all) → Firmware** and your local key. A device with Secure Boot enabled requires its original trusted key.
+> Published firmware is unsigned; sign it yourself before installation using **[PicoForge All](https://github.com/XiaoNetwork-Astral/pico-forge-all) → Firmware** and your local key. A device with Secure Boot enabled requires its original trusted key.
 >
 > Running Nuke permanently deletes all firmware, credentials, PINs and settings in external Flash. Prepare a signed Pico All image for restoration first. OTP and hardware locks remain in place.
 
