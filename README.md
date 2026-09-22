@@ -13,7 +13,7 @@ Erase the external Flash on a **Waveshare RP2350-One**, then return to BOOTSEL f
 
 ## Download and use
 
-Download `pico_nuke_all-1.7-unsigned.uf2` from [Releases](https://github.com/BlueFunny19/pico-nuke-all/releases/latest).
+Download `pico_nuke_all-1.7-unsigned.uf2` from [Releases](https://github.com/XiaoNetwork-Astral/pico-nuke-all/releases/latest).
 
 > [!WARNING]
 > Published firmware is unsigned; sign it yourself before installation using **[PicoForge All](https://github.com/XiaoNetwork-Astral/pico-forge-all) → Firmware** and your local key. A device with Secure Boot enabled requires its original trusted key.
@@ -37,7 +37,7 @@ When loaded directly from BOOTSEL, Nuke starts immediately without another butto
 Requires an Arm toolchain, CMake, Ninja and Pico SDK 2.3.1.
 
 ```sh
-git clone https://github.com/BlueFunny19/pico-nuke-all.git
+git clone https://github.com/XiaoNetwork-Astral/pico-nuke-all.git
 cd pico-nuke-all
 cmake -S . -B build -G Ninja -DPICO_SDK_PATH=/path/to/pico-sdk -DPICO_BOARD=waveshare_rp2350_one
 cmake --build build

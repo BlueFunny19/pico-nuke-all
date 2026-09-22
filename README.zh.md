@@ -13,7 +13,7 @@
 
 ## 下载与使用
 
-从 [Releases](https://github.com/BlueFunny19/pico-nuke-all/releases/latest) 下载 `pico_nuke_all-1.7-unsigned.uf2`
+从 [Releases](https://github.com/XiaoNetwork-Astral/pico-nuke-all/releases/latest) 下载 `pico_nuke_all-1.7-unsigned.uf2`
 
 > [!WARNING]
 > 发布的固件未签名，需要自行签名后再安装；可使用 **[PicoForge All](https://github.com/XiaoNetwork-Astral/pico-forge-all) → 固件**，选择本地签名密钥进行签名；已开启安全启动的设备必须使用原来的受信任密钥
@@ -37,7 +37,7 @@
 需要 Arm 工具链、CMake、Ninja 和 Pico SDK 2.3.1
 
 ```sh
-git clone https://github.com/BlueFunny19/pico-nuke-all.git
+git clone https://github.com/XiaoNetwork-Astral/pico-nuke-all.git
 cd pico-nuke-all
 cmake -S . -B build -G Ninja -DPICO_SDK_PATH=/path/to/pico-sdk -DPICO_BOARD=waveshare_rp2350_one
 cmake --build build
